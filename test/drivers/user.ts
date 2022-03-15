@@ -1,5 +1,5 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import * as userDriver from "../../src/drivers/user";
+import * as userDriver from "../../src/db/users/driver";
 import { connect } from "mongoose";
 
 import assert from "assert";
