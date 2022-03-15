@@ -7,7 +7,7 @@ export interface IUser {
 
 const schema = new Schema<IUser>({
   name: { type: String, required: true },
-  phone: { type: String, required: true },
+  phone: { type: String, required: true, unique: true },
 });
 
 const User = model<IUser>("IUser", schema);
