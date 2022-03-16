@@ -9,7 +9,7 @@
     "prestart": "npm run build",
     "start": "node .",
     "test": "ts-mocha 'test/**/*.ts'  --exit",
-    "coverage": "nyc --all npm run test"
+    "coverage": "nyc --all --reporter=html npm run test"
   },
   "author": "",
   "license": "MIT",
