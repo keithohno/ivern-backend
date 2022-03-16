@@ -8,21 +8,21 @@ import crypto from "crypto";
 import argon2 from "argon2";
 
 const genUserData = async () => {
-  const name = crypto.randomBytes(10).toString("hex");
-  const phone = crypto.randomBytes(10).toString("hex");
-  const password = crypto.randomBytes(10).toString("hex");
+  const name = crypto.randomBytes(20).toString("hex");
+  const phone = crypto.randomBytes(20).toString("hex");
+  const password = crypto.randomBytes(20).toString("hex");
   return {
-    password: {
+    withPassword: {
       name: name,
       phone: phone,
       password: password,
     },
-    hash: {
+    withHash: {
       name: name,
       phone: phone,
       hash: await argon2.hash(password),
     },
-    neither: {
+    withNeither: {
       name: name,
       phone: phone,
     },
@@ -55,27 +55,56 @@ describe("passport", function () {
 
   it("POST /create_user", async () => {
     const testUser = await genUserData();
-    const res = await request(App).post("/create_user").send(testUser.password);
+    const res = await request(App)
+      .post("/create_user")
+      .send(testUser.withPassword);
     assert.equal("create user success", res.body.msg);
-    assert.equal(1, await User.countDocuments(testUser.neither).exec());
+    assert.equal(1, await User.countDocuments(testUser.withNeither).exec());
   });
 
   it("POST /login success", async () => {
     const testUser = await genUserData();
-    await new User(testUser.hash).save();
-    const res = await request(App).post("/login").send(testUser.password);
+    await new User(testUser.withHash).save();
+    const res = await request(App).post("/login").send(testUser.withPassword);
     assert.equal("login success", res.body.msg);
   });
 
   it("POST /login failure (empty body)", async () => {
     const testUser = await genUserData();
-    await new User(testUser.hash).save();
+    await new User(testUser.withHash).save();
     await request(App).post("/login").expect(302).expect("Location", "/fail");
   });
 
   it("POST /login failure (wrong password)", async () => {
-    const testUser = await genUserData();
-    await new User(testUser.hash).save();
-    await request(App).post("/login").expect(302).expect("Location", "/fail");
+    let testUser = await genUserData();
+    await new User(testUser.withHash).save();
+    testUser.withPassword.password = crypto.randomBytes(20).toString("hex");
+    await request(App)
+      .post("/login")
+      .send(testUser.withPassword)
+      .expect(302)
+      .expect("Location", "/fail");
+  });
+
+  it("POST /login failure (no such user)", async () => {
+    let testUser = await genUserData();
+    await new User(testUser.withHash).save();
+    testUser.withPassword.phone = crypto.randomBytes(20).toString("hex");
+    await request(App)
+      .post("/login")
+      .send(testUser.withPassword)
+      .expect(302)
+      .expect("Location", "/fail");
+  });
+
+  it("POST /login failure (no such user)", async () => {
+    let testUser = await genUserData();
+    await new User(testUser.withHash).save();
+    testUser.withPassword.phone = crypto.randomBytes(20).toString("hex");
+    await request(App)
+      .post("/login")
+      .send(testUser.withPassword)
+      .expect(302)
+      .expect("Location", "/fail");
   });
 });
