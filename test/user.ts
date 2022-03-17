@@ -5,14 +5,14 @@ import App from "../src/app";
 
 import { genUserData } from "./helpers";
 
-describe("user ", function () {
+describe("user ", () => {
   it("POST /user/new success", async () => {
     const testUser = await genUserData();
     const res = await request(App)
       .post("/user/new")
       .send(testUser.withPassword);
-    assert.equal("create user success", res.body.msg);
-    assert.equal(1, await User.countDocuments(testUser.withNeither).exec());
+    assert.equal(res.body.msg, "create user success");
+    assert.equal(await User.countDocuments(testUser.withNeither).exec(), 1);
   });
 
   it("POST /user/new failure (duplicate phone)", async () => {
@@ -23,7 +23,7 @@ describe("user ", function () {
     const res = await request(App)
       .post("/user/new")
       .send(testUser2.withPassword);
-    assert.equal("create user failure: duplicate user", res.body.msg);
-    assert.equal(1, await User.countDocuments({}).exec());
+    assert.equal(res.body.msg, "create user failure: duplicate user");
+    assert.equal(await User.countDocuments({}).exec(), 1);
   });
 });

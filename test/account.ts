@@ -6,17 +6,17 @@ import crypto from "crypto";
 
 import { genUserData } from "./helpers";
 
-describe("passport", function () {
+describe("passport", () => {
   it("GET /fail", async () => {
     const res = await request(App).get("/fail");
-    assert.equal("login failure", res.body.msg);
+    assert.equal(res.body.msg, "login failure");
   });
 
   it("POST /login success", async () => {
     const testUser = await genUserData();
     await new User(testUser.withHash).save();
     const res = await request(App).post("/login").send(testUser.withPassword);
-    assert.equal("login success", res.body.msg);
+    assert.equal(res.body.msg, "login success");
   });
 
   it("POST /login failure (empty body)", async () => {
