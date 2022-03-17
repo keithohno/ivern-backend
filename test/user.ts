@@ -7,22 +7,18 @@ import { genUserData } from "./helpers";
 
 describe("user ", () => {
   it("POST /user/new success", async () => {
-    const testUser = await genUserData();
-    const res = await request(App)
-      .post("/user/new")
-      .send(testUser.withPassword);
+    const user = await genUserData();
+    const res = await request(App).post("/user/new").send(user.client);
     assert.equal(res.body.msg, "create user success");
-    assert.equal(await User.countDocuments(testUser.withNeither).exec(), 1);
+    assert.equal(await User.countDocuments(user.filter).exec(), 1);
   });
 
   it("POST /user/new failure (duplicate phone)", async () => {
-    const testUser1 = await genUserData();
-    const testUser2 = await genUserData();
-    testUser2.withPassword.phone = testUser1.withPassword.phone;
-    await request(App).post("/user/new").send(testUser1.withPassword);
-    const res = await request(App)
-      .post("/user/new")
-      .send(testUser2.withPassword);
+    const user1 = await genUserData();
+    const user2 = await genUserData();
+    user2.client.phone = user1.client.phone;
+    await request(App).post("/user/new").send(user1.client);
+    const res = await request(App).post("/user/new").send(user2.client);
     assert.equal(res.body.msg, "create user failure: duplicate user");
     assert.equal(await User.countDocuments({}).exec(), 1);
   });

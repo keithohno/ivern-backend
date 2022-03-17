@@ -13,47 +13,34 @@ describe("passport", () => {
   });
 
   it("POST /login success", async () => {
-    const testUser = await genUserData();
-    await new User(testUser.withHash).save();
-    const res = await request(App).post("/login").send(testUser.withPassword);
+    const user = await genUserData();
+    await new User(user.db).save();
+    const res = await request(App).post("/login").send(user.client);
     assert.equal(res.body.msg, "login success");
   });
 
   it("POST /login failure (empty body)", async () => {
-    const testUser = await genUserData();
-    await new User(testUser.withHash).save();
+    const user = await genUserData();
+    await new User(user.db).save();
     await request(App).post("/login").expect(302).expect("Location", "/fail");
   });
 
   it("POST /login failure (wrong password)", async () => {
-    let testUser = await genUserData();
-    await new User(testUser.withHash).save();
-    testUser.withPassword.password = crypto.randomBytes(20).toString("hex");
+    let user = await genUserData();
+    await new User(user.db).save();
+    user.client.password = crypto.randomBytes(20).toString("hex");
     await request(App)
       .post("/login")
-      .send(testUser.withPassword)
+      .send(user.client)
       .expect(302)
       .expect("Location", "/fail");
   });
 
   it("POST /login failure (no such user)", async () => {
-    let testUser = await genUserData();
-    await new User(testUser.withHash).save();
-    testUser.withPassword.phone = crypto.randomBytes(20).toString("hex");
+    let user = await genUserData();
     await request(App)
       .post("/login")
-      .send(testUser.withPassword)
-      .expect(302)
-      .expect("Location", "/fail");
-  });
-
-  it("POST /login failure (no such user)", async () => {
-    let testUser = await genUserData();
-    await new User(testUser.withHash).save();
-    testUser.withPassword.phone = crypto.randomBytes(20).toString("hex");
-    await request(App)
-      .post("/login")
-      .send(testUser.withPassword)
+      .send(user.client)
       .expect(302)
       .expect("Location", "/fail");
   });
