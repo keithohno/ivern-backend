@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import argon2 from "argon2";
 
-export const genUserData = async () => {
+export const dummy = async () => {
   const name = crypto.randomBytes(20).toString("hex");
   const phone = crypto.randomBytes(20).toString("hex");
   const password = crypto.randomBytes(20).toString("hex");
