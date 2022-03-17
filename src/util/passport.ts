@@ -1,4 +1,5 @@
 import passport from "passport";
+import { Request, Response, NextFunction } from "express";
 import { NativeError } from "mongoose";
 import { Strategy } from "passport-local";
 import User, { IUser } from "../models/user";
@@ -25,3 +26,14 @@ passport.deserializeUser((phone, done) => {
     done(err, user);
   });
 });
+
+export const authenticated = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.isAuthenticated())
+    if ((req.user as IUser).phone === req.params.phone) return next();
+    else res.send({ msg: "authentication failure (wrong user)" });
+  else res.send({ msg: "authentication failure (not logged in)" });
+};
