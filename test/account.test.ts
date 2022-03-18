@@ -22,26 +22,18 @@ describe("passport", () => {
   it("POST /login failure (empty body)", async () => {
     const user = await dummy();
     user.save();
-    await request(App).post("/login").expect(302).expect("Location", "/fail");
+    await request(App).post("/login").expect(400);
   });
 
   it("POST /login failure (wrong password)", async () => {
     let user = await dummy();
     user.save();
     user.client.password = crypto.randomBytes(20).toString("hex");
-    await request(App)
-      .post("/login")
-      .send(user.client)
-      .expect(302)
-      .expect("Location", "/fail");
+    await request(App).post("/login").send(user.client).expect(401);
   });
 
   it("POST /login failure (no such user)", async () => {
     let user = await dummy();
-    await request(App)
-      .post("/login")
-      .send(user.client)
-      .expect(302)
-      .expect("Location", "/fail");
+    await request(App).post("/login").send(user.client).expect(401);
   });
 });

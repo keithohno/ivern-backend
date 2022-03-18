@@ -3,13 +3,9 @@ import passport from "passport";
 
 const router = Router();
 
-router.post(
-  "/login",
-  passport.authenticate("local", { failureRedirect: "/fail" }),
-  (req, res) => {
-    res.json({ msg: "login success" });
-  }
-);
+router.post("/login", passport.authenticate("local"), (req, res) => {
+  res.json({ msg: "login success" });
+});
 
 router.get("/fail", (req, res) => {
   res.json({ msg: "login failure" });
