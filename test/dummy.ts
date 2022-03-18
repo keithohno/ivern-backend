@@ -1,6 +1,8 @@
 import crypto from "crypto";
 import argon2 from "argon2";
 
+import User from "../src/models/user";
+
 export const dummy = async () => {
   const name = crypto.randomBytes(20).toString("hex");
   const phone = crypto.randomBytes(20).toString("hex");
@@ -9,5 +11,8 @@ export const dummy = async () => {
   const client = { name, phone, password };
   const db = { name, phone, hash };
   const filter = { name, phone };
-  return { client, db, filter };
+  const save = async () => {
+    await new User(db).save();
+  };
+  return { client, db, filter, save };
 };

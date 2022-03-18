@@ -14,20 +14,20 @@ describe("passport", () => {
 
   it("POST /login success", async () => {
     const user = await dummy();
-    await new User(user.db).save();
+    user.save();
     const res = await request(App).post("/login").send(user.client);
     assert.equal(res.body.msg, "login success");
   });
 
   it("POST /login failure (empty body)", async () => {
     const user = await dummy();
-    await new User(user.db).save();
+    user.save();
     await request(App).post("/login").expect(302).expect("Location", "/fail");
   });
 
   it("POST /login failure (wrong password)", async () => {
     let user = await dummy();
-    await new User(user.db).save();
+    user.save();
     user.client.password = crypto.randomBytes(20).toString("hex");
     await request(App)
       .post("/login")

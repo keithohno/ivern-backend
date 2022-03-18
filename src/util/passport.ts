@@ -22,7 +22,7 @@ passport.serializeUser((user: IUser, done) => {
 });
 
 passport.deserializeUser((phone, done) => {
-  User.findOne({ phone: phone }, (err: NativeError, user: IUser) => {
+  User.findOne({ phone }, (err: NativeError, user: IUser) => {
     done(err, user);
   });
 });
@@ -34,6 +34,6 @@ export const authenticated = (
 ) => {
   if (req.isAuthenticated())
     if ((req.user as IUser).phone === req.params.phone) return next();
-    else res.send({ msg: "authentication failure (wrong user)" });
-  else res.send({ msg: "authentication failure (not logged in)" });
+    else res.json({ msg: "authentication failure (wrong user)" });
+  else res.json({ msg: "authentication failure (not logged in)" });
 };

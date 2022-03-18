@@ -10,7 +10,7 @@ export default router;
 
 router.post("/new", async (req, res) => {
   if ((await User.countDocuments({ phone: req.body.phone })) !== 0) {
-    res.send({ msg: "create user failure: duplicate user" });
+    res.json({ msg: "create user failure: duplicate user" });
     return;
   }
   const user = new User({
@@ -19,7 +19,7 @@ router.post("/new", async (req, res) => {
     hash: await argon2.hash(req.body.password),
   });
   await user.save();
-  res.send({ msg: "create user success" });
+  res.json({ msg: "create user success" });
 });
 
 router.put("/:phone", authenticated, async (req, res) => {
@@ -29,7 +29,7 @@ router.put("/:phone", authenticated, async (req, res) => {
   if (req.body.phone)
     if ((await User.countDocuments({ phone: req.body.phone })) === 0)
       user.phone = req.body.phone;
-    else return res.send({ msg: "update user failure (phone taken)" });
+    else return res.json({ msg: "update user failure (phone taken)" });
   await user.save();
-  res.send({ msg: "update user success" });
+  res.json({ msg: "update user success" });
 });
