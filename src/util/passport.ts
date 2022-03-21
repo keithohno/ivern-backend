@@ -32,8 +32,6 @@ export const authenticated = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.isAuthenticated())
-    if ((req.user as IUser).phone === req.params.phone) return next();
-    else res.json({ msg: "authentication failure (wrong user)" });
-  else res.json({ msg: "authentication failure (not logged in)" });
+  if (req.isAuthenticated()) return next();
+  else res.status(401).json({ msg: "authentication failure" });
 };

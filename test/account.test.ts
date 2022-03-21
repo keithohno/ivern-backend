@@ -1,15 +1,25 @@
 import request from "supertest-session";
 import assert from "assert";
-import User from "../src/models/user";
 import crypto from "crypto";
 
 import App from "./app";
+import User from "../src/models/user";
 import { dummy } from "./dummy";
 
 describe("passport", () => {
-  it("GET /fail", async () => {
-    const res = await request(App).get("/fail");
-    assert.equal(res.body.msg, "login failure");
+  it("POST /signup success", async () => {
+    const user = await dummy();
+    const res = await request(App).post("/signup").send(user.client);
+    assert.equal(res.body.msg, "create user success");
+    assert.equal(await User.countDocuments(user.filter).exec(), 1);
+  });
+
+  it("POST /signup failure (duplicate phone)", async () => {
+    const user = await dummy();
+    user.save();
+    const res = await request(App).post("/signup").send(user.client);
+    assert.equal(res.body.msg, "create user failure: duplicate user");
+    assert.equal(await User.countDocuments({}).exec(), 1);
   });
 
   it("POST /login success", async () => {

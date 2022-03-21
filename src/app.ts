@@ -5,8 +5,8 @@ import passport from "passport";
 import cors from "cors";
 
 import "./util/passport";
-import accountRouter from "./routes/account";
-import userRouter from "./routes/user";
+import protRouter from "./routes/protected";
+import pubRouter from "./routes";
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(accountRouter);
-app.use("/user", userRouter);
+app.use(pubRouter);
+app.use("/p", protRouter);
 
 export default app;
