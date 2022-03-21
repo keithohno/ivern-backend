@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(session({ resave: true, saveUninitialized: true, secret: "jaesul" }));
 
-app.use(cors());
+app.use(cors({ origin: "http://192.168.163.128:3000", credentials: true }));
 
 app.use(passport.initialize());
 app.use(passport.session());
