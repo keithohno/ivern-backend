@@ -3,7 +3,7 @@ import argon2 from "argon2";
 
 import User from "../src/models/user";
 
-export const dummy = async () => {
+export const dummy = async (options = { save: true }) => {
   const name = crypto.randomBytes(20).toString("hex");
   const phone = crypto.randomBytes(20).toString("hex");
   const password = crypto.randomBytes(20).toString("hex");
@@ -14,5 +14,6 @@ export const dummy = async () => {
   const save = async () => {
     await new User(db).save();
   };
+  if (options.save) save();
   return { client, db, filter, save };
 };

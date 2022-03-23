@@ -31,7 +31,7 @@ describe("passport", function () {
   });
 
   it("POST /signup success", async () => {
-    const user = await dummy();
+    const user = await dummy({ save: false });
     const res = await request(App).post("/signup").send(user.client);
     assert.equal(res.body.msg, "create user success");
     assert.equal(await User.countDocuments(user.filter).exec(), 1);
@@ -39,7 +39,6 @@ describe("passport", function () {
 
   it("POST /signup failure (duplicate phone)", async () => {
     const user = await dummy();
-    user.save();
     const res = await request(App)
       .post("/signup")
       .send(user.client)
@@ -50,26 +49,23 @@ describe("passport", function () {
 
   it("POST /login success", async () => {
     const user = await dummy();
-    user.save();
     const res = await request(App).post("/login").send(user.client);
     assert.equal(res.body.msg, "login success");
   });
 
   it("POST /login failure (empty body)", async () => {
     const user = await dummy();
-    user.save();
     await request(App).post("/login").expect(400);
   });
 
   it("POST /login failure (wrong password)", async () => {
     let user = await dummy();
-    user.save();
     user.client.password = crypto.randomBytes(20).toString("hex");
     await request(App).post("/login").send(user.client).expect(401);
   });
 
   it("POST /login failure (no such user)", async () => {
-    let user = await dummy();
+    let user = await dummy({ save: false });
     await request(App).post("/login").send(user.client).expect(401);
   });
 });

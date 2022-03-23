@@ -31,8 +31,7 @@ describe("user ", function () {
 
   it("PUT /p success", async () => {
     const user = await dummy();
-    const newData = await dummy();
-    await user.save();
+    const newData = await dummy({ save: false });
     const session = request(App);
     await session.post("/login").send(user.client);
     const res = await session.put("/p").send(newData.client);
@@ -43,7 +42,6 @@ describe("user ", function () {
 
   it("PUT /p success (no update)", async () => {
     const user = await dummy();
-    await user.save();
     const session = request(App);
     await session.post("/login").send(user.client);
     const res = await session.put("/p");
@@ -54,8 +52,6 @@ describe("user ", function () {
   it("PUT /p failure (phone number taken)", async () => {
     const user1 = await dummy();
     const user2 = await dummy();
-    await user1.save();
-    await user2.save();
     const session = request(App);
     await session.post("/login").send(user1.client);
     const res = await session.put("/p").send({ phone: user2.client.phone });
@@ -65,7 +61,6 @@ describe("user ", function () {
 
   it("GET /p/get success", async () => {
     const user = await dummy();
-    user.save();
     const session = request(App);
     await session.post("/login").send(user.client);
     const res = await session.get("/p/get");
