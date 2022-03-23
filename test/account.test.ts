@@ -1,12 +1,35 @@
 import request from "supertest-session";
 import assert from "assert";
 import crypto from "crypto";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { connect, disconnect } from "mongoose";
+import { Server } from "http";
 
 import App from "./app";
 import User from "../src/models/user";
 import { dummy } from "./dummy";
 
-describe("passport", () => {
+describe("passport", function () {
+  var mongod: MongoMemoryServer;
+  var server: Server;
+
+  this.beforeAll(async () => {
+    mongod = await MongoMemoryServer.create();
+    const uri = mongod.getUri();
+    await connect(uri);
+    server = App.listen(5000);
+  });
+
+  this.afterAll(async () => {
+    await mongod.stop();
+    disconnect();
+    server.close();
+  });
+
+  this.beforeEach(async () => {
+    await User.deleteMany({});
+  });
+
   it("POST /signup success", async () => {
     const user = await dummy();
     const res = await request(App).post("/signup").send(user.client);
