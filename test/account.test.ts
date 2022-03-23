@@ -40,7 +40,10 @@ describe("passport", function () {
   it("POST /signup failure (duplicate phone)", async () => {
     const user = await dummy();
     user.save();
-    const res = await request(App).post("/signup").send(user.client);
+    const res = await request(App)
+      .post("/signup")
+      .send(user.client)
+      .expect(400);
     assert.equal(res.body.msg, "create user failure: duplicate user");
     assert.equal(await User.countDocuments({}).exec(), 1);
   });

@@ -12,7 +12,7 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
 
 router.post("/signup", async (req, res) => {
   if ((await User.countDocuments({ phone: req.body.phone })) !== 0) {
-    res.json({ msg: "create user failure: duplicate user" });
+    res.status(400).json({ msg: "create user failure: duplicate user" });
     return;
   }
   const user = new User({
